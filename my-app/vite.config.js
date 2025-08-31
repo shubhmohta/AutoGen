@@ -4,9 +4,14 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  base: '/AutoGen/',
   server: {
     proxy: {
-      "/api": "http://localhost:5500"
+      "/api": {
+        target: process.env.VITE_API_URL || "http://localhost:5500",
+        changeOrigin: true,
+        secure: false,
+      }
     }
   }
 })
