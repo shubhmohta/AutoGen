@@ -6,46 +6,45 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: my-app/package-lock.json
-      
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
+
       - name: Install dependencies
         run: |
           cd my-app
-          npm ci
-      
+          npm install
+
       - name: Build
         run: |
           cd my-app
           npm run build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./my-app/dist
+          path: my-app/dist
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

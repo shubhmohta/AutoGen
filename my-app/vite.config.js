@@ -5,6 +5,10 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   base: '/AutoGen/',
+  build: {
+    outDir: 'dist',
+    sourcemap: true
+  },
   server: {
     proxy: {
       "/api": {
